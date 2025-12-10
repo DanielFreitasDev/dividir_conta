@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Divisor de Conta de Restaurante</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!-- PWA: cor do tema -->
+    <meta name="theme-color" content="#020617"/>
+
+    <!-- PWA: manifesto -->
+    <link rel="manifest" href="manifest.webmanifest"/>
+
+    <!-- Ícone básico do site (ajuste o caminho se precisar) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+
+    <style>
+        :root {
+            --bg: #020617;
+            --bg-soft: #0f172a;
+            --bg-softer: #020617;
+            --border: #1f2937;
+            --border-soft: #334155;
+            --accent: #22c55e;
+            --accent-soft: rgba(34, 197, 94, 0.12);
+            --accent-strong: #16a34a;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --danger: #f97373;
+            --danger-soft: rgba(248, 113, 113, 0.14);
+            --shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+            --radius-card: 1rem;
+            --radius-pill: 999px;
+            --radius-input: 0.75rem;
+            --transition: 0.18s ease-out;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            sans-serif;
+            background: radial-gradient(circle at top, #1d3557 0, #020617 55%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .app {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.7rem;
+            letter-spacing: 0.03em;
+        }
+
+        header p {
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .card {
+            background: radial-gradient(circle at top left, #111827 0, #020617 55%);
+            border-radius: var(--radius-card);
+            padding: 1rem 1.1rem 1.1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            margin: 0 0 0.7rem 0;
+            font-size: 1.1rem;
+        }
+
+        .card .subtitle {
+            margin-top: -0.25rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .inline-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.45rem 0.65rem;
+            border-radius: var(--radius-input);
+            border: 1px solid var(--border-soft);
+            background-color: var(--bg-softer);
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color var(--transition),
+            box-shadow var(--transition), background-color var(--transition),
+            transform var(--transition);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
+            background-color: #020617;
+            transform: translateY(-1px);
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .grid-2 {
+                grid-template-columns: 1.1fr 0.9fr;
+            }
+        }
+
+        .people-list,
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .person-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.4rem;
+            border-radius: 0.75rem;
+            border: 1px dashed rgba(148, 163, 184, 0.28);
+            background: radial-gradient(circle at top left, #020617 0, #020617 100%);
+        }
+
+        .person-row input[type="text"] {
+            flex: 1;
+        }
+
+        .btn,
+        .mini-btn,
+        .icon-button {
+            cursor: pointer;
+            border-radius: var(--radius-pill);
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            padding: 0.4rem 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            transition: background-color var(--transition),
+            color var(--transition), transform var(--transition),
+            box-shadow var(--transition), border-color var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #022c22;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.25);
+            padding-inline: 1.1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: rgba(15, 23, 42, 0.95);
+            color: var(--text);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(15, 23, 42, 1);
+            border-color: var(--accent);
+        }
+
+        .mini-btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.55rem;
+            background-color: rgba(15, 23, 42, 0.9);
+            color: var(--muted);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .mini-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-0.5px);
+        }
+
+        .icon-button {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            padding: 0;
+            font-size: 1.1rem;
+            background-color: rgba(15, 23, 42, 0.95);
+            color: var(--muted);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            flex-shrink: 0;
+        }
+
+        .icon-button:hover {
+            background-color: var(--danger-soft);
+            color: var(--danger);
+            border-color: var(--danger);
+            transform: translateY(-0.5px) scale(1.02);
+        }
+
+        .icon-button-small {
+            width: 24px;
+            height: 24px;
+            font-size: 1rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-header small {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .items-header {
+            display: none;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .items-header span {
+            padding-inline: 0.15rem;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr);
+            gap: 0.45rem 0.65rem;
+            padding: 0.55rem 0.6rem;
+            border-radius: 0.9rem;
+            border: 1px dashed rgba(148, 163, 184, 0.28);
+            background: radial-gradient(circle at top left, #020617 0, #020617 100%);
+        }
+
+        .item-name input[type="text"] {
+            font-size: 0.9rem;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .item-price span {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .item-participants {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.25rem;
+            grid-column: 1 / -1;
+        }
+
+        @media (min-width: 768px) {
+            .items-header {
+                display: grid;
+                grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr) minmax(
+                        0,
+                        1.6fr
+                ) auto;
+                padding-inline: 0.2rem;
+            }
+
+            .item-row {
+                grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr) minmax(
+                        0,
+                        1.6fr
+                ) auto;
+                align-items: center;
+            }
+
+            .item-participants {
+                grid-column: auto;
+            }
+
+            .item-actions {
+                grid-column: auto;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            user-select: none;
+        }
+
+        .chip input[type="checkbox"] {
+            display: none;
+        }
+
+        .chip span {
+            padding: 0.12rem 0.6rem;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(148, 163, 184, 0.55);
+            background-color: rgba(15, 23, 42, 0.9);
+            color: var(--muted);
+            transition: background-color var(--transition),
+            color var(--transition), border-color var(--transition),
+            box-shadow var(--transition), transform var(--transition);
+        }
+
+        .chip input[type="checkbox"]:checked + span {
+            background: linear-gradient(
+                    135deg,
+                    rgba(34, 197, 94, 0.16),
+                    rgba(16, 185, 129, 0.4)
+            );
+            color: #bbf7d0;
+            border-color: rgba(45, 212, 191, 0.9);
+            box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .chip input[type="checkbox"]:focus-visible + span {
+            box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.7);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.72rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: var(--radius-pill);
+            background-color: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            color: var(--muted);
+        }
+
+        .tag-accent {
+            background-color: var(--accent-soft);
+            border-color: rgba(45, 212, 191, 0.9);
+            color: #bbf7d0;
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.4rem;
+            line-height: 1.4;
+        }
+
+        .warning {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.7rem;
+            border-radius: 0.75rem;
+            background-color: rgba(248, 113, 113, 0.07);
+            border: 1px solid rgba(248, 113, 113, 0.45);
+            color: #fecaca;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 0.45rem 0.35rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.85);
+        }
+
+        .results-table th {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-table th:nth-child(2),
+        .results-table th:nth-child(3),
+        .results-table th:nth-child(4),
+        .results-table td:nth-child(2),
+        .results-table td:nth-child(3),
+        .results-table td:nth-child(4) {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .results-table td strong {
+            font-size: 0.95rem;
+        }
+
+        .summary-line {
+            margin-top: 0.7rem;
+            padding-top: 0.55rem;
+            border-top: 1px dashed rgba(148, 163, 184, 0.5);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .summary-line div {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .summary-line span {
+            color: var(--muted);
+        }
+
+        .summary-line strong {
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (min-width: 640px) {
+            .summary-line {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        .actions-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            text-align: center;
+            margin: 1.2rem 0 0.4rem;
+            font-size: 0.7rem;
+            color: var(--muted);
+            opacity: 0.9;
+        }
+
+        footer span {
+            opacity: 0.7;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: var(--radius-pill);
+            background-color: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header>
+        <h1>Divisor de Conta de Restaurante</h1>
+        <p>Informe quem comeu o quê e veja quanto cada um deve pagar, com taxa proporcional.</p>
+    </header>
+
+    <section class="card">
+        <div class="section-header">
+            <h2>1. Configurações</h2>
+            <span class="tag tag-accent">Funciona bem no celular e no PC 🧮</span>
+        </div>
+        <div class="grid-2">
+            <div>
+                <label for="serviceRate" class="inline-label">
+                    Taxa de serviço (%)
+                </label>
+                <input
+                        type="number"
+                        id="serviceRate"
+                        min="0"
+                        step="0.1"
+                        value="10"
+                />
+                <p class="hint">
+                    Se o restaurante não cobrar serviço ou vocês não quiserem pagar, coloque <strong>0</strong>.
+                </p>
+            </div>
+            <div>
+                <label for="billName">Descrição da conta (opcional)</label>
+                <input
+                        type="text"
+                        id="billName"
+                        placeholder="Ex.: Almoço de sexta, churrascaria do trabalho..."
+                />
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="section-header">
+            <h2>2. Pessoas</h2>
+            <small>Edite os nomes e adicione/remova pessoas conforme o grupo.</small>
+        </div>
+        <div id="peopleList" class="people-list"></div>
+        <div class="actions-row">
+            <button id="addPersonBtn" type="button" class="btn btn-secondary">
+                + Adicionar pessoa
+            </button>
+            <span class="hint">
+          Dica: renomeie as pessoas para combinar com o grupo de hoje.
+        </span>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="section-header">
+            <h2>3. Itens da conta</h2>
+            <small>Informe o valor total de cada item e marque quem consumiu.</small>
+        </div>
+
+        <div class="items-header">
+            <span>Item</span>
+            <span>Valor total</span>
+            <span>Quem consumiu</span>
+            <span></span>
+        </div>
+
+        <div id="itemsList" class="items-list"></div>
+
+        <div class="actions-row">
+            <button id="addItemBtn" type="button" class="btn btn-secondary">
+                + Adicionar item
+            </button>
+            <span class="hint">
+          Use o <strong>valor total</strong> da linha na conta do restaurante. A divisão é feita automaticamente entre os selecionados.
+        </span>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="section-header">
+            <h2>4. Resultado</h2>
+            <small>Consumo, taxa de serviço proporcional e total por pessoa.</small>
+        </div>
+        <div class="actions-row" style="margin-bottom: 0.3rem;">
+            <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button id="calculateBtn" type="button" class="btn btn-primary">
+                    Calcular divisão
+                </button>
+                <button id="clearAllBtn" type="button" class="btn btn-secondary">
+                    Limpar tudo
+                </button>
+                <button id="loadExampleBtn" type="button" class="mini-btn">
+                    Carregar exemplo
+                </button>
+            </div>
+            <span class="badge">
+          <span>ℹ️</span>
+          <span>Os centavos são arredondados; a soma pode variar 1–2 centavos.</span>
+        </span>
+        </div>
+        <div id="totalsContainer"></div>
+    </section>
+
+    <footer>
+        <span>Salve este arquivo no celular e use toda vez que a conta chegar 😄</span>
+    </footer>
+</div>
+
+<script>
+    (function () {
+        let personIdCounter = 1;
+        let itemIdCounter = 1;
+
+        const state = {
+            people: [],
+            items: [],
+        };
+
+        const peopleListEl = document.getElementById("peopleList");
+        const itemsListEl = document.getElementById("itemsList");
+        const serviceRateInput = document.getElementById("serviceRate");
+        const billNameInput = document.getElementById("billName");
+        const totalsContainer = document.getElementById("totalsContainer");
+        const addPersonBtn = document.getElementById("addPersonBtn");
+        const addItemBtn = document.getElementById("addItemBtn");
+        const calculateBtn = document.getElementById("calculateBtn");
+        const clearAllBtn = document.getElementById("clearAllBtn");
+        const loadExampleBtn = document.getElementById("loadExampleBtn");
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;",
+                }[m];
+            });
+        }
+
+        function formatCurrency(value) {
+            if (!isFinite(value)) value = 0;
+            return value.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+            });
+        }
+
+        function addPerson(name) {
+            const person = {
+                id: personIdCounter++,
+                name: name || `Pessoa ${state.people.length + 1}`,
+            };
+            state.people.push(person);
+            renderPeople();
+            renderItems();
+            return person;
+        }
+
+        function removePerson(personId) {
+            state.people = state.people.filter((p) => p.id !== personId);
+            state.items.forEach((item) => {
+                item.participants = item.participants.filter((id) => id !== personId);
+            });
+            renderPeople();
+            renderItems();
+        }
+
+        function renderPeople() {
+            peopleListEl.innerHTML = "";
+            state.people.forEach((person) => {
+                const row = document.createElement("div");
+                row.className = "person-row";
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.value = person.name;
+                input.placeholder = "Nome da pessoa";
+                input.addEventListener("input", (e) => {
+                    person.name = e.target.value;
+                    renderItems();
+                });
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "icon-button icon-button-small";
+                removeBtn.innerHTML = "&times;";
+                removeBtn.title = "Remover pessoa";
+
+                removeBtn.addEventListener("click", () => {
+                    if (state.people.length <= 1) return;
+                    removePerson(person.id);
+                });
+
+                row.appendChild(input);
+                row.appendChild(removeBtn);
+                peopleListEl.appendChild(row);
+            });
+        }
+
+        function addItem(initialData) {
+            const item = {
+                id: itemIdCounter++,
+                name: (initialData && initialData.name) || "",
+                price:
+                    initialData && typeof initialData.price === "number"
+                        ? initialData.price
+                        : 0,
+                participants:
+                    initialData && initialData.participants
+                        ? [...initialData.participants]
+                        : [],
+            };
+            state.items.push(item);
+            renderItems();
+            return item;
+        }
+
+        function renderItems() {
+            itemsListEl.innerHTML = "";
+
+            if (state.items.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "hint";
+                empty.textContent =
+                    "Nenhum item ainda. Clique em “Adicionar item” para começar.";
+                itemsListEl.appendChild(empty);
+                return;
+            }
+
+            state.items.forEach((item) => {
+                const row = document.createElement("div");
+                row.className = "item-row";
+                row.dataset.id = String(item.id);
+
+                const priceValue =
+                    typeof item.price === "number" &&
+                    !isNaN(item.price) &&
+                    item.price > 0
+                        ? item.price
+                        : "";
+
+                row.innerHTML = `
+            <div class="item-name">
+              <label style="margin-bottom:0.15rem;">Item</label>
+              <input
+                type="text"
+                class="item-name-input"
+                placeholder="Ex.: Churrasco, Cajuína, Linguiça..."
+                value="${escapeHtml(item.name || "")}"
+              />
+            </div>
+            <div class="item-price">
+              <div style="width:100%;">
+                <label style="margin-bottom:0.15rem;">Valor total</label>
+                <div style="display:flex;align-items:center;gap:.35rem;">
+                  <span>R$</span>
+                  <input
+                    type="number"
+                    class="item-price-input"
+                    min="0"
+                    step="0.01"
+                    inputmode="decimal"
+                    value="${priceValue !== "" ? priceValue : ""}"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="item-participants">
+            </div>
+            <div class="item-actions">
+              <div style="display:flex;gap:0.25rem;">
+                <button type="button" class="mini-btn select-all">Todos</button>
+                <button type="button" class="mini-btn clear-all">Nenhum</button>
+              </div>
+              <button type="button" class="icon-button remove-item" title="Remover item">
+                &times;
+              </button>
+            </div>
+          `;
+
+                const nameInput = row.querySelector(".item-name-input");
+                const priceInput = row.querySelector(".item-price-input");
+                const participantsContainer = row.querySelector(".item-participants");
+                const selectAllBtn = row.querySelector(".select-all");
+                const clearAllBtn = row.querySelector(".clear-all");
+                const removeItemBtn = row.querySelector(".remove-item");
+
+                nameInput.addEventListener("input", (e) => {
+                    item.name = e.target.value;
+                });
+
+                priceInput.addEventListener("input", (e) => {
+                    const raw = String(e.target.value || "").replace(",", ".");
+                    const v = parseFloat(raw);
+                    item.price = isNaN(v) ? 0 : v;
+                });
+
+                participantsContainer.innerHTML = "";
+                state.people.forEach((person) => {
+                    const label = document.createElement("label");
+                    label.className = "chip";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.value = person.id;
+                    checkbox.checked = item.participants.includes(person.id);
+
+                    const span = document.createElement("span");
+                    span.textContent = person.name || "Pessoa";
+
+                    checkbox.addEventListener("change", (e) => {
+                        const checked = e.target.checked;
+                        const pid = person.id;
+                        if (checked) {
+                            if (!item.participants.includes(pid)) {
+                                item.participants.push(pid);
+                            }
+                        } else {
+                            item.participants = item.participants.filter(
+                                (id) => id !== pid
+                            );
+                        }
+                    });
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    participantsContainer.appendChild(label);
+                });
+
+                selectAllBtn.addEventListener("click", () => {
+                    item.participants = state.people.map((p) => p.id);
+                    renderItems();
+                });
+
+                clearAllBtn.addEventListener("click", () => {
+                    item.participants = [];
+                    renderItems();
+                });
+
+                removeItemBtn.addEventListener("click", () => {
+                    state.items = state.items.filter((it) => it.id !== item.id);
+                    renderItems();
+                });
+
+                itemsListEl.appendChild(row);
+            });
+        }
+
+        function calculateTotals() {
+            totalsContainer.innerHTML = "";
+
+            if (!state.people.length) {
+                totalsContainer.innerHTML =
+                    '<p class="warning">Adicione pelo menos uma pessoa antes de calcular.</p>';
+                return;
+            }
+
+            const rawRate = String(serviceRateInput.value || "").replace(",", ".");
+            let rate = parseFloat(rawRate);
+            if (!isFinite(rate) || rate < 0) rate = 0;
+
+            const activeItems = state.items.filter(
+                (item) =>
+                    typeof item.price === "number" &&
+                    item.price > 0 &&
+                    item.participants &&
+                    item.participants.length > 0
+            );
+
+            const subtotal = activeItems.reduce((sum, item) => sum + item.price, 0);
+
+            if (subtotal <= 0) {
+                totalsContainer.innerHTML =
+                    '<p class="warning">Adicione pelo menos um item com valor maior que zero e com alguém marcado como consumidor.</p>';
+                return;
+            }
+
+            const perPerson = {};
+            state.people.forEach((person) => {
+                perPerson[person.id] = {
+                    person,
+                    consumption: 0,
+                };
+            });
+
+            activeItems.forEach((item) => {
+                const share = item.price / item.participants.length;
+                item.participants.forEach((pid) => {
+                    if (perPerson[pid]) {
+                        perPerson[pid].consumption += share;
+                    }
+                });
+            });
+
+            const serviceTotal = (subtotal * rate) / 100;
+
+            const ordered = Object.values(perPerson).sort((a, b) =>
+                (a.person.name || "")
+                    .toLowerCase()
+                    .localeCompare((b.person.name || "").toLowerCase(), "pt-BR")
+            );
+
+            let html = "";
+            html += `
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Pessoa</th>
+                <th>Consumo</th>
+                <th>Taxa serviço</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+            let sumCheck = 0;
+
+            ordered.forEach((entry) => {
+                const cons = entry.consumption;
+                let taxa = 0;
+                if (subtotal > 0 && cons > 0) {
+                    taxa = (cons / subtotal) * serviceTotal;
+                }
+                const total = cons + taxa;
+                sumCheck += total;
+
+                const name = entry.person.name || "Pessoa";
+
+                html += `
+            <tr>
+              <td>${escapeHtml(name)}</td>
+              <td>${formatCurrency(cons)}</td>
+              <td>${formatCurrency(taxa)}</td>
+              <td><strong>${formatCurrency(total)}</strong></td>
+            </tr>
+          `;
+            });
+
+            html += `
+            </tbody>
+          </table>
+        `;
+
+            html += `
+          <div class="summary-line">
+            <div>
+              <span>Subtotal (itens):</span>
+              <strong>${formatCurrency(subtotal)}</strong>
+            </div>
+            <div>
+              <span>Taxa serviço (${rate.toFixed(2).replace(".", ",")} %):</span>
+              <strong>${formatCurrency(serviceTotal)}</strong>
+            </div>
+            <div>
+              <span>Total geral:</span>
+              <strong>${formatCurrency(subtotal + serviceTotal)}</strong>
+            </div>
+          </div>
+          <p class="hint">
+            Soma dos valores individuais: <strong>${formatCurrency(
+                sumCheck
+            )}</strong>.
+            Pequenas diferenças de centavos podem acontecer por causa de arredondamento.
+          </p>
+        `;
+
+            totalsContainer.innerHTML = html;
+        }
+
+        function resetAll() {
+            state.people = [];
+            state.items = [];
+            personIdCounter = 1;
+            itemIdCounter = 1;
+            billNameInput.value = "";
+            renderPeople();
+            renderItems();
+            totalsContainer.innerHTML = "";
+        }
+
+        function initExample() {
+            resetAll();
+
+            addPerson("Daniel");
+            addPerson("Darlyson");
+            addPerson("Manoel");
+            addPerson("Lucas");
+            addPerson("Rui");
+
+            const [daniel, darlyson, manoel, lucas, rui] = state.people.map(
+                (p) => p.id
+            );
+
+            addItem({
+                name: "Linguiça",
+                price: 6.5,
+                participants: [rui],
+            });
+
+            addItem({
+                name: "Cajuína 2L",
+                price: 17.9,
+                participants: [daniel, darlyson, lucas, rui],
+            });
+
+            addItem({
+                name: "Churrasco Vieira",
+                price: 169.9,
+                participants: [daniel, darlyson, manoel, lucas, rui],
+            });
+
+            addItem({
+                name: "Linguiça Cuiabana Suína",
+                price: 13.0,
+                participants: [lucas],
+            });
+
+            serviceRateInput.value = "10";
+            billNameInput.value = "Exemplo - Churrasco com Cajuína";
+            calculateTotals();
+        }
+
+        // Focar no nome ao adicionar pessoa
+        addPersonBtn.addEventListener("click", () => {
+            addPerson();
+            requestAnimationFrame(() => {
+                const inputs = peopleListEl.querySelectorAll('input[type="text"]');
+                if (inputs.length) {
+                    const last = inputs[inputs.length - 1];
+                    last.focus();
+                    last.select();
+                }
+            });
+        });
+
+        // Focar no nome do item ao adicionar item
+        addItemBtn.addEventListener("click", () => {
+            addItem();
+            requestAnimationFrame(() => {
+                const rows = itemsListEl.querySelectorAll('.item-row');
+                if (rows.length) {
+                    const lastRow = rows[rows.length - 1];
+                    const nameInput = lastRow.querySelector('.item-name-input');
+                    if (nameInput) {
+                        nameInput.focus();
+                        nameInput.select();
+                    }
+                }
+            });
+        });
+
+        calculateBtn.addEventListener("click", () => {
+            calculateTotals();
+        });
+
+        clearAllBtn.addEventListener("click", () => {
+            resetAll();
+        });
+
+        loadExampleBtn.addEventListener("click", () => {
+            initExample();
+        });
+
+        // Inicia LIMPO
+        resetAll();
+    })();
+</script>
+
+<!-- PWA: registro do service worker -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('Service Worker registrado:', reg.scope))
+                .catch(err => console.error('Erro ao registrar Service Worker:', err));
+        });
+    }
+</script>
+</body>
+</html>
