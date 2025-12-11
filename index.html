@@ -5,13 +5,10 @@
     <title>Divisor de Conta de Restaurante</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <!-- PWA: cor do tema -->
     <meta name="theme-color" content="#020617"/>
 
-    <!-- PWA: manifesto -->
     <link rel="manifest" href="manifest.webmanifest"/>
 
-    <!-- Ícone básico do site (ajuste o caminho se precisar) -->
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
 
     <style>
@@ -105,13 +102,6 @@
         .card h2 {
             margin: 0 0 0.7rem 0;
             font-size: 1.1rem;
-        }
-
-        .card .subtitle {
-            margin-top: -0.25rem;
-            margin-bottom: 0.75rem;
-            font-size: 0.8rem;
-            color: var(--muted);
         }
 
         label {
@@ -294,7 +284,7 @@
         }
 
         .items-header {
-            display: none;
+            display: none; /* Oculto no mobile */
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
@@ -306,74 +296,178 @@
             padding-inline: 0.15rem;
         }
 
+        /* --- ESTILOS DE ITEM ATUALIZADOS PARA MOBILE E STEPPER --- */
         .item-row {
-            display: grid;
-            grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr);
-            gap: 0.45rem 0.65rem;
-            padding: 0.55rem 0.6rem;
+            display: flex;
+            flex-direction: column; /* Mobile: Um abaixo do outro */
+            gap: 0.8rem;
+            padding: 0.85rem;
             border-radius: 0.9rem;
             border: 1px dashed rgba(148, 163, 184, 0.28);
             background: radial-gradient(circle at top left, var(--bg-softer) 0, var(--bg) 100%);
         }
 
+        .item-name {
+            width: 100%;
+        }
+
         .item-name input[type="text"] {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            width: 100%;
         }
 
         .item-price {
             display: flex;
-            align-items: flex-end;
-            gap: 0.45rem;
+            flex-direction: column; /* Mobile: Valor em cima, Qtd embaixo */
+            gap: 0.8rem;
+            width: 100%;
         }
 
-        .item-price span {
-            font-size: 0.85rem;
+        /* Container do input de Valor */
+        .price-container {
+            width: 100%;
+        }
+
+        /* Container do controlador de quantidade */
+        .qty-container {
+            width: 100%;
+        }
+
+        /* --- CORREÇÃO DE ALTURA IGUAL --- */
+        /* Força a mesma altura para input de nome, input de preço e o stepper de quantidade */
+        .item-name-input,
+        .item-price-input,
+        .stepper {
+            height: 2.5rem; /* Altura unificada (aprox 40px) */
+        }
+
+        /* Estilo do controlador de quantidade (Stepper) */
+        .stepper {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-input);
+            background-color: var(--bg-softer);
+            overflow: hidden;
+            width: 100%;
+            padding: 0; /* Remove padding interno para alinhar com inputs */
+        }
+
+        .stepper button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 0 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%; /* Botão ocupa toda a altura do container */
+        }
+
+        .stepper button:hover {
+            background-color: rgba(34, 197, 94, 0.1);
+        }
+
+        .stepper button:active {
+            background-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .stepper input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            text-align: center;
+            padding: 0;
+            font-weight: 600;
+            width: 3rem;
+            -moz-appearance: textfield;
+            color: var(--text);
+            height: 100%; /* Input ocupa altura total */
+        }
+
+        .stepper input:focus {
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Ajustes para alinhar Labels */
+        .item-price label, .item-name label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-size: 0.8rem;
             color: var(--muted);
         }
 
         .item-participants {
-            grid-column: 1 / -1;
             display: flex;
             flex-wrap: wrap;
-            gap: 0.2rem;
+            gap: 0.35rem;
+            margin-top: 0.2rem;
         }
 
         .item-actions {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 0.25rem;
-            grid-column: 1 / -1;
+            justify-content: space-between; /* No mobile, espalha os botões */
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed rgba(148, 163, 184, 0.15);
         }
 
+        /* --- MEDIA QUERIES (PC / Tablet) --- */
         @media (min-width: 768px) {
             .items-header {
                 display: grid;
-                grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr) minmax(
-                        0,
-                        1.6fr
-                ) auto;
-                padding-inline: 0.2rem;
+                grid-template-columns: 1.3fr 1.3fr 1.4fr auto;
+                padding-inline: 0.85rem;
+                gap: 1rem;
             }
 
             .item-row {
-                grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr) minmax(
-                        0,
-                        1.6fr
-                ) auto;
-                align-items: center;
+                display: grid;
+                grid-template-columns: 1.3fr 1.3fr 1.4fr auto;
+                align-items: start;
+                gap: 1rem;
+            }
+
+            .item-price {
+                flex-direction: row; /* PC: Lado a lado */
+                gap: 0.75rem;
+            }
+
+            .price-container {
+                flex: 1.2;
+            }
+
+            .qty-container {
+                flex: 0.8;
+            }
+
+            .stepper {
+                width: auto;
             }
 
             .item-participants {
-                grid-column: auto;
+                margin-top: 1.6rem;
             }
 
             .item-actions {
-                grid-column: auto;
                 flex-direction: column;
                 align-items: flex-end;
+                justify-content: center;
+                border-top: none;
+                margin-top: 1.2rem;
+                padding-top: 0;
             }
         }
+
+        /* --- FIM BLOCO ATUALIZADO --- */
 
         .chip {
             display: inline-flex;
@@ -618,12 +712,12 @@
     <section class="card">
         <div class="section-header">
             <h2>3. Itens da conta</h2>
-            <small>Informe a quantidade, valor unitário de cada item e marque quem consumiu.</small>
+            <small>Informe o nome, valor unitário e use os botões para ajustar a quantidade.</small>
         </div>
 
         <div class="items-header">
             <span>Item</span>
-            <span>Qtd / Valor</span>
+            <span>Valor / Qtd</span>
             <span>Quem consumiu</span>
             <span></span>
         </div>
@@ -635,7 +729,7 @@
                 + Adicionar item
             </button>
             <span class="hint">
-          Use a <strong>quantidade</strong> e o <strong>valor unitário</strong>. O valor total (qtd × valor) é dividido automaticamente entre os selecionados.
+          O valor total (qtd × valor) é dividido automaticamente entre os selecionados.
         </span>
         </div>
     </section>
@@ -820,43 +914,52 @@
 
                 row.innerHTML = `
             <div class="item-name">
-              <label style="margin-bottom:0.15rem;">Item</label>
+              <label style="margin-bottom:0.35rem;">Nome do Item</label>
               <input
                 type="text"
                 class="item-name-input"
-                placeholder="Ex.: Churrasco, Cajuína, Linguiça..."
+                placeholder="Ex.: Picanha, Suco..."
                 value="${escapeHtml(item.name || "")}"
               />
             </div>
+
             <div class="item-price">
-              <div style="width:80px;">
-                <label style="margin-bottom:0.15rem;">Qtd</label>
-                <input
-                  type="number"
-                  class="item-qty-input"
-                  min="1"
-                  step="1"
-                  inputmode="numeric"
-                  value="${qtyValue}"
-                />
-              </div>
-              <div style="width:100%;">
-                <label style="margin-bottom:0.15rem;">Valor unitário</label>
+              <div class="price-container">
+                <label>Vr unitário</label>
                 <div style="display:flex;align-items:center;gap:.35rem;">
-                  <span>R$</span>
+                  <span style="color:var(--muted); font-size:0.9rem;">R$</span>
                   <input
                     type="number"
                     class="item-price-input"
                     min="0"
                     step="0.01"
                     inputmode="decimal"
+                    placeholder="0,00"
                     value="${priceValue !== "" ? priceValue : ""}"
                   />
                 </div>
               </div>
+
+              <div class="qty-container">
+                <label>Qtd</label>
+                <div class="stepper">
+                    <button type="button" class="btn-decrease" title="Diminuir">－</button>
+                    <input
+                        type="number"
+                        class="item-qty-input"
+                        min="1"
+                        step="1"
+                        readonly
+                        value="${qtyValue}"
+                    />
+                    <button type="button" class="btn-increase" title="Aumentar">＋</button>
+                </div>
+              </div>
             </div>
+
             <div class="item-participants">
-            </div>
+              </div>
+
             <div class="item-actions">
               <div style="display:flex;gap:0.25rem;">
                 <button type="button" class="mini-btn select-all">Todos</button>
@@ -871,29 +974,43 @@
                 const nameInput = row.querySelector(".item-name-input");
                 const priceInput = row.querySelector(".item-price-input");
                 const qtyInput = row.querySelector(".item-qty-input");
+                const btnDecrease = row.querySelector(".btn-decrease");
+                const btnIncrease = row.querySelector(".btn-increase");
                 const participantsContainer = row.querySelector(".item-participants");
                 const selectAllBtn = row.querySelector(".select-all");
                 const clearAllBtn = row.querySelector(".clear-all");
                 const removeItemBtn = row.querySelector(".remove-item");
 
+                // Nome
                 nameInput.addEventListener("input", (e) => {
                     item.name = e.target.value;
                 });
 
+                // Preço
                 priceInput.addEventListener("input", (e) => {
                     const raw = String(e.target.value || "").replace(",", ".");
                     const v = parseFloat(raw);
                     item.price = isNaN(v) ? 0 : v;
                 });
 
-                qtyInput.addEventListener("input", (e) => {
-                    const raw = String(e.target.value || "").replace(",", ".");
-                    let q = parseInt(raw, 10);
-                    if (!isFinite(q) || q < 1) q = 1;
-                    item.quantity = q;
-                    qtyInput.value = q;
+                // Lógica de Quantidade (Botões)
+                const updateQuantity = (newQty) => {
+                    if (newQty < 1) newQty = 1;
+                    item.quantity = newQty;
+                    qtyInput.value = newQty;
+                };
+
+                btnDecrease.addEventListener("click", () => {
+                    let current = parseInt(qtyInput.value, 10) || 1;
+                    updateQuantity(current - 1);
                 });
 
+                btnIncrease.addEventListener("click", () => {
+                    let current = parseInt(qtyInput.value, 10) || 1;
+                    updateQuantity(current + 1);
+                });
+
+                // Participantes
                 participantsContainer.innerHTML = "";
                 state.people.forEach((person) => {
                     const label = document.createElement("label");
@@ -926,6 +1043,7 @@
                     participantsContainer.appendChild(label);
                 });
 
+                // Ações
                 selectAllBtn.addEventListener("click", () => {
                     item.participants = state.people.map((p) => p.id);
                     renderItems();
@@ -1125,7 +1243,7 @@
             addItem({
                 name: "Linguiça Cuiabana Suína",
                 price: 13.0,
-                quantity: 1,
+                quantity: 2,
                 participants: [lucas],
             });
 
@@ -1205,7 +1323,6 @@
     })();
 </script>
 
-<!-- PWA: registro do service worker -->
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
