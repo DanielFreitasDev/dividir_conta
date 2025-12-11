@@ -118,6 +118,7 @@
             gap: 0.75rem;
         }
 
+        /* Inputs Gerais */
         input[type="text"],
         input[type="number"] {
             width: 100%;
@@ -144,16 +145,6 @@
         body.light-theme input[type="text"]:focus,
         body.light-theme input[type="number"]:focus {
             background-color: #ffffff;
-        }
-
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
         }
 
         .grid-2 {
@@ -284,7 +275,7 @@
         }
 
         .items-header {
-            display: none; /* Oculto no mobile */
+            display: none;
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
@@ -296,10 +287,10 @@
             padding-inline: 0.15rem;
         }
 
-        /* --- ESTILOS DE ITEM ATUALIZADOS PARA MOBILE E STEPPER --- */
+        /* --- ESTILOS DE ITEM --- */
         .item-row {
             display: flex;
-            flex-direction: column; /* Mobile: Um abaixo do outro */
+            flex-direction: column;
             gap: 0.8rem;
             padding: 0.85rem;
             border-radius: 0.9rem;
@@ -311,34 +302,53 @@
             width: 100%;
         }
 
-        .item-name input[type="text"] {
-            font-size: 0.95rem;
-            width: 100%;
-        }
-
         .item-price {
             display: flex;
-            flex-direction: column; /* Mobile: Valor em cima, Qtd embaixo */
+            flex-direction: column;
             gap: 0.8rem;
             width: 100%;
         }
 
-        /* Container do input de Valor */
         .price-container {
             width: 100%;
         }
 
-        /* Container do controlador de quantidade */
         .qty-container {
             width: 100%;
         }
 
-        /* --- CORREÇÃO DE ALTURA IGUAL --- */
-        /* Força a mesma altura para input de nome, input de preço e o stepper de quantidade */
+        /* CORREÇÃO DE ALTURA IGUAL */
+        /* Garante que o input de nome, o input de preço e os botões de qtd tenham a mesma altura */
         .item-name-input,
-        .item-price-input,
+        .item-price-input-masked,
         .stepper {
-            height: 2.5rem; /* Altura unificada (aprox 40px) */
+            height: 2.5rem; /* Altura fixa para alinhar */
+        }
+
+        /* Estilo do Input de Valor (Sem R$, com máscara) */
+        .item-price-input-masked {
+            width: 100%;
+            padding: 0.45rem 0.65rem;
+            border-radius: var(--radius-input);
+            border: 1px solid var(--border-soft);
+            background-color: var(--bg-softer);
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            font-variant-numeric: tabular-nums;
+            transition: all var(--transition);
+            text-align: center; /* Centraliza o valor "0,00" */
+        }
+
+        .item-price-input-masked:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
+            background-color: #020617;
+            transform: translateY(-1px);
+        }
+
+        body.light-theme .item-price-input-masked:focus {
+            background-color: #ffffff;
         }
 
         /* Estilo do controlador de quantidade (Stepper) */
@@ -350,7 +360,7 @@
             background-color: var(--bg-softer);
             overflow: hidden;
             width: 100%;
-            padding: 0; /* Remove padding interno para alinhar com inputs */
+            padding: 0;
         }
 
         .stepper button {
@@ -365,7 +375,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100%; /* Botão ocupa toda a altura do container */
+            height: 100%;
         }
 
         .stepper button:hover {
@@ -386,7 +396,7 @@
             width: 3rem;
             -moz-appearance: textfield;
             color: var(--text);
-            height: 100%; /* Input ocupa altura total */
+            height: 100%;
         }
 
         .stepper input:focus {
@@ -412,7 +422,7 @@
         .item-actions {
             display: flex;
             align-items: center;
-            justify-content: space-between; /* No mobile, espalha os botões */
+            justify-content: space-between;
             gap: 0.5rem;
             width: 100%;
             margin-top: 0.5rem;
@@ -437,7 +447,7 @@
             }
 
             .item-price {
-                flex-direction: row; /* PC: Lado a lado */
+                flex-direction: row;
                 gap: 0.75rem;
             }
 
@@ -466,8 +476,6 @@
                 padding-top: 0;
             }
         }
-
-        /* --- FIM BLOCO ATUALIZADO --- */
 
         .chip {
             display: inline-flex;
@@ -807,6 +815,15 @@
             });
         }
 
+        // Função auxiliar para transformar "123" em "1,23" visualmente
+        function formatNumberAsCurrencyString(numberVal) {
+            if (typeof numberVal !== 'number' || isNaN(numberVal)) return "0,00";
+            return numberVal.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
         function addPerson(name) {
             const person = {
                 id: personIdCounter++,
@@ -898,12 +915,8 @@
                 row.className = "item-row";
                 row.dataset.id = String(item.id);
 
-                const priceValue =
-                    typeof item.price === "number" &&
-                    !isNaN(item.price) &&
-                    item.price > 0
-                        ? item.price
-                        : "";
+                // Garante que o valor inicial seja formatado para exibição (ex: 10.5 vira "10,50")
+                const initialPriceStr = formatNumberAsCurrencyString(item.price);
 
                 const qtyValue =
                     typeof item.quantity === "number" &&
@@ -926,18 +939,13 @@
             <div class="item-price">
               <div class="price-container">
                 <label>Vr unitário</label>
-                <div style="display:flex;align-items:center;gap:.35rem;">
-                  <span style="color:var(--muted); font-size:0.9rem;">R$</span>
-                  <input
-                    type="number"
-                    class="item-price-input"
-                    min="0"
-                    step="0.01"
-                    inputmode="decimal"
+                <input
+                    type="text"
+                    inputmode="numeric"
+                    class="item-price-input-masked"
                     placeholder="0,00"
-                    value="${priceValue !== "" ? priceValue : ""}"
-                  />
-                </div>
+                    value="${initialPriceStr}"
+                />
               </div>
 
               <div class="qty-container">
@@ -971,8 +979,9 @@
             </div>
           `;
 
+                // Elementos
                 const nameInput = row.querySelector(".item-name-input");
-                const priceInput = row.querySelector(".item-price-input");
+                const priceInput = row.querySelector(".item-price-input-masked");
                 const qtyInput = row.querySelector(".item-qty-input");
                 const btnDecrease = row.querySelector(".btn-decrease");
                 const btnIncrease = row.querySelector(".btn-increase");
@@ -986,12 +995,24 @@
                     item.name = e.target.value;
                 });
 
-                // Preço
+                // --- MÁSCARA DE MOEDA (LÓGICA) ---
                 priceInput.addEventListener("input", (e) => {
-                    const raw = String(e.target.value || "").replace(",", ".");
-                    const v = parseFloat(raw);
-                    item.price = isNaN(v) ? 0 : v;
+                    // Remove tudo que não for dígito
+                    let value = e.target.value.replace(/\D/g, "");
+
+                    // Se ficar vazio, trata como zero
+                    if (value === "") value = "0";
+
+                    // Converte para número e divide por 100 para pegar os centavos
+                    const numberValue = parseInt(value, 10) / 100;
+
+                    // Atualiza o estado interno (o valor real numérico)
+                    item.price = numberValue;
+
+                    // Formata de volta para visualização (ex: 123 -> "1,23")
+                    e.target.value = formatNumberAsCurrencyString(numberValue);
                 });
+                // ---------------------------------
 
                 // Lógica de Quantidade (Botões)
                 const updateQuantity = (newQty) => {
